@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>大學系組查詢</title>
+</head>
+<body>
+    <h2>大學系組查詢系統</h2>
+
+    <input type="text" id="school-input" placeholder="請輸入校名">
+    <button onclick="search()">搜尋</button>
+
+    <div id="result"></div>
+
+    <script>
+        let data = [];
+
+        // 載入 CSV 資料
+        fetch('final_data.csv')
+            .then(res => res.text())
+            .then(csvText => {
+                let rows = csvText.trim().split('\n').slice(1); // 去除標題
+                rows.forEach(row => {
+                    const [year, code, school, dept] = row.split(',');
+                    data.push({ year, code, school, dept });
+                });
+            });
+
+        function search() {
+            const input = document.getElementById('school-input').value;
+            const filteredData = data.filter(item => item.school.includes(input))
+                                     .sort((a, b) => a.year - b.year); // 依年份排序
+            
+            let output = '';
+            filteredData.forEach(item => {
+                output += `<p>${item.year}年：${item.dept}</p>`;
+            });
+
+            document.getElementById('result').innerHTML = output || '無查詢結果';
+        }
+    </script>
+</body>
+</html>
